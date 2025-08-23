@@ -9,10 +9,7 @@
     "type": "mlb",
     "team": "Los Angeles Angels",
     "teamId": 108,
-    "abbreviation": "LAA",
-    "city": "Anaheim",
-    "division": "American League West",
-    "league": "American League"
+    "abbreviation": "LAA"
   },
   {
     "type": "mlb",
