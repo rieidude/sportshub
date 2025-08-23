@@ -3,7 +3,6 @@ class SportsHub {
         this.allEvents = [];
         this.filteredEvents = [];
         this.currentFilter = 'today';
-        this.currentSportFilter = 'all';
         this.searchQuery = '';
 
         this.init();
@@ -12,7 +11,6 @@ class SportsHub {
     async init() {
         this.bindEvents();
         await this.loadData();
-        this.populateSportFilter();
         this.filterEvents('today');
     }
 
@@ -22,12 +20,6 @@ class SportsHub {
         document.getElementById('tomorrowBtn').addEventListener('click', () => this.filterEvents('tomorrow'));
         document.getElementById('weekBtn').addEventListener('click', () => this.filterEvents('week'));
         document.getElementById('allBtn').addEventListener('click', () => this.filterEvents('all'));
-
-        // Sport filter dropdown
-        document.getElementById('sportFilter').addEventListener('change', (e) => {
-            this.currentSportFilter = e.target.value;
-            this.applyFilters();
-        });
 
         // Search
         document.getElementById('search').addEventListener('input', (e) => {
@@ -103,28 +95,6 @@ class SportsHub {
         return events;
     }
 
-    // Populate sport filter dropdown with available sports
-    populateSportFilter() {
-        const sportFilter = document.getElementById('sportFilter');
-        if (!sportFilter) return;
-
-        // Get unique sports from all events
-        const sports = [...new Set(this.allEvents.map(event => event.sport))].sort();
-        
-        // Clear existing options except "All Sports"
-        sportFilter.innerHTML = '<option value="all">All Sports</option>';
-        
-        // Add sport options
-        sports.forEach(sport => {
-            if (sport) {
-                const option = document.createElement('option');
-                option.value = sport.toLowerCase();
-                option.textContent = sport;
-                sportFilter.appendChild(option);
-            }
-        });
-    }
-
     // Fetch MLB games from the official MLB Stats API
     async fetchMLBGames(startDate, endDate) {
         try {
@@ -188,7 +158,7 @@ class SportsHub {
         // Check abstract state first for broader categories
         if (abstractState === 'Live') return 'Live';
         if (abstractState === 'Final') return 'Final';
-        
+      
         // Then check detailed states
         if (state === 'In Progress' || state === 'I') return 'Live';
         if (state === 'Final' || state === 'F') return 'Final';
