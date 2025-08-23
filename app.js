@@ -4,7 +4,7 @@ class SportsHub {
         this.filteredEvents = [];
         this.currentFilter = 'today';
         this.searchQuery = '';
-
+        
         this.init();
     }
 
@@ -34,14 +34,17 @@ class SportsHub {
             const teamsResponse = await fetch('./data/teams.json');
             const teams = await teamsResponse.json();
 
-            // For demo purposes, load sample events
-            // In a real app, you'd fetch from sports APIs based on the teams
-            const eventsResponse = await fetch('./data/sample-events.json');
-            const sampleEvents = await eventsResponse.json();
+            // Fetch real events from APIs
+            console.log('Fetching real sports data...');
+            this.allEvents = await this.fetchEventsFromAPIs(teams);
 
-            // In production, you'd call APIs like:
-            // this.allEvents = await this.fetchEventsFromAPIs(teams);
-            this.allEvents = sampleEvents;
+            // Fallback to sample data if API fails
+            if (this.allEvents.length === 0) {
+                console.log('No API data found, loading sample events...');
+                const eventsResponse = await fetch('./data/sample-events.json');
+                const sampleEvents = await eventsResponse.json();
+                this.allEvents = sampleEvents;
+            }
 
             // Sort events by date
             this.allEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
@@ -52,45 +55,120 @@ class SportsHub {
         }
     }
 
-    // This is where you'd integrate with real sports APIs
+    // Fetch real sports data from APIs
     async fetchEventsFromAPIs(teams) {
         const events = [];
+        
+        // Get date range for API calls
+        const today = new Date();
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        
+        const startDate = today.toISOString().split('T')[0];
+        const endDate = nextMonth.toISOString().split('T')[0];
+        
+        // Group teams by sport to minimize API calls
+        const mlbTeams = teams.filter(t => t.type === 'mlb');
+        const nbaTeams = teams.filter(t => t.type === 'nba');
+        const nhlTeams = teams.filter(t => t.type === 'nhl');
+        const nflTeams = teams.filter(t => t.type === 'nfl');
+        
+        try {
+            // Fetch MLB games (all games, then filter for your teams)
+            if (mlbTeams.length > 0) {
+                console.log('Fetching MLB games...');
+                const mlbGames = await this.fetchMLBGames(startDate, endDate);
+                const filteredMLBGames = this.filterGamesForTeams(mlbGames, mlbTeams);
+                events.push(...filteredMLBGames);
+            }
+            
+            // Add other sports here later
+            // if (nbaTeams.length > 0) {
+            //     const nbaGames = await this.fetchNBAGames(startDate, endDate);
+            //     events.push(...this.filterGamesForTeams(nbaGames, nbaTeams));
+            // }
+            
+        } catch (error) {
+            console.error('Error fetching API data:', error);
+        }
+        
+        return events;
+    }
 
-        // Example API integration (you'd implement these)
-        for (const team of teams) {
-            try {
-                switch (team.type) {
-                    case 'mlb':
-                        // events.push(...await this.fetchMLBGames(team));
-                        break;
-                    case 'nba':
-                        // events.push(...await this.fetchNBAGames(team));
-                        break;
-                    case 'nhl':
-                        // events.push(...await this.fetchNHLGames(team));
-                        break;
-                    case 'nfl':
-                        // events.push(...await this.fetchNFLGames(team));
-                        break;
-                    case 'mma':
-                        // events.push(...await this.fetchMMAEvents(team));
-                        break;
+    // Fetch MLB games from the official MLB Stats API
+    async fetchMLBGames(startDate, endDate) {
+        try {
+            const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=${startDate}&endDate=${endDate}`;
+            console.log('MLB API URL:', url);
+            
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`MLB API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return this.normalizeMLBData(data);
+        } catch (error) {
+            console.error('Error fetching MLB games:', error);
+            return [];
+        }
+    }
+
+    // Filter games to only include your favorite teams
+    filterGamesForTeams(games, teams) {
+        const teamNames = teams.map(t => t.team.toLowerCase());
+        return games.filter(game => {
+            const teamA = game.teamA.toLowerCase();
+            const teamB = game.teamB.toLowerCase();
+            return teamNames.some(name => teamA.includes(name) || teamB.includes(name));
+        });
+    }
+
+    // Convert MLB API response to our standard format
+    normalizeMLBData(data) {
+        const games = [];
+        
+        if (data.dates) {
+            for (const date of data.dates) {
+                if (date.games) {
+                    for (const game of date.games) {
+                        games.push({
+                            id: `mlb_${game.gamePk}`,
+                            sport: 'Baseball',
+                            league: 'MLB',
+                            teamA: game.teams.away.team.name,
+                            teamB: game.teams.home.team.name,
+                            start: game.gameDate,
+                            status: this.getMLBGameStatus(game.status),
+                            venue: game.venue?.name || 'TBD'
+                        });
+                    }
                 }
-            } catch (error) {
-                console.error(`Error fetching ${team.type} events:`, error);
             }
         }
+        
+        return games;
+    }
 
-        return events;
+    // Convert MLB status to our standard format
+    getMLBGameStatus(status) {
+        const state = status.detailedState || status.statusCode;
+        
+        if (state === 'In Progress' || state === 'I') return 'Live';
+        if (state === 'Final' || state === 'F') return 'Final';
+        if (state === 'Postponed' || state === 'P') return 'Postponed';
+        if (state === 'Cancelled' || state === 'C') return 'Cancelled';
+        
+        return 'Scheduled';
     }
 
     filterEvents(timeframe) {
         this.currentFilter = timeframe;
-
+        
         // Update active button
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${timeframe}Btn`).classList.add('active');
-
+        
         this.applyFilters();
     }
 
@@ -106,7 +184,7 @@ class SportsHub {
 
         let filtered = this.allEvents.filter(event => {
             const eventDate = new Date(event.start);
-
+            
             // Time filter
             switch (this.currentFilter) {
                 case 'today':
@@ -130,7 +208,7 @@ class SportsHub {
                     event.teamA, event.teamB, event.fighterA, event.fighterB,
                     event.league, event.promotion, event.sport
                 ].filter(Boolean).join(' ').toLowerCase();
-
+                
                 if (!searchFields.includes(this.searchQuery)) return false;
             }
 
@@ -162,7 +240,7 @@ class SportsHub {
         const eventDate = new Date(event.start);
         const isToday = this.isToday(eventDate);
         const isTomorrow = this.isTomorrow(eventDate);
-
+        
         let dateLabel = '';
         if (isToday) {
             dateLabel = 'Today';
@@ -218,7 +296,7 @@ class SportsHub {
     showError(message) {
         const eventsListEl = document.getElementById('eventsList');
         const loadingEl = document.getElementById('loading');
-
+        
         loadingEl.style.display = 'none';
         eventsListEl.innerHTML = `
             <div class="event-card" style="text-align: center; color: #f44336;">
