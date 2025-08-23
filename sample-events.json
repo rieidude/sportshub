@@ -1,0 +1,56 @@
+[
+  {
+    "id": "mlb_0",
+    "sport": "Baseball",
+    "league": "MLB",
+    "teamA": "New York Yankees",
+    "teamB": "Los Angeles Dodgers",
+    "start": "2025-08-23T22:54:52.522602",
+    "status": "Scheduled"
+  },
+  {
+    "id": "mlb_1",
+    "sport": "Baseball",
+    "league": "MLB",
+    "teamA": "Los Angeles Dodgers",
+    "teamB": "San Francisco Giants",
+    "start": "2025-08-24T22:54:52.522602",
+    "status": "Scheduled"
+  },
+  {
+    "id": "nba_0",
+    "sport": "Basketball",
+    "league": "NBA",
+    "teamA": "Los Angeles Lakers",
+    "teamB": "Golden State Warriors",
+    "start": "2025-08-24T23:54:52.522602",
+    "status": "Scheduled"
+  },
+  {
+    "id": "nba_1",
+    "sport": "Basketball",
+    "league": "NBA",
+    "teamA": "Golden State Warriors",
+    "teamB": "Boston Celtics",
+    "start": "2025-08-25T23:54:52.522602",
+    "status": "Scheduled"
+  },
+  {
+    "id": "ufc_1",
+    "sport": "MMA",
+    "promotion": "UFC",
+    "fighterA": "Jon Jones",
+    "fighterB": "Stipe Miocic",
+    "start": "2025-08-31T01:54:52.522602",
+    "status": "Scheduled"
+  },
+  {
+    "id": "bellator_1",
+    "sport": "MMA",
+    "promotion": "Bellator",
+    "fighterA": "Patricio Freire",
+    "fighterB": "Jeremy Kennedy",
+    "start": "2025-09-07T00:54:52.522602",
+    "status": "Scheduled"
+  }
+]
