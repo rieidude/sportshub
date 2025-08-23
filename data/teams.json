@@ -6,6 +6,11 @@
   },
   {
     "type": "mlb",
+    "team": "147",
+    "city": "New York"
+  },
+  {
+    "type": "mlb",
     "team": "Los Angeles Dodgers",
     "city": "Los Angeles"
   },
