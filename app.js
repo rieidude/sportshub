@@ -4,7 +4,7 @@ class SportsHub {
         this.filteredEvents = [];
         this.currentFilter = 'today';
         this.searchQuery = '';
-        
+
         this.init();
     }
 
@@ -58,21 +58,21 @@ class SportsHub {
     // Fetch real sports data from APIs
     async fetchEventsFromAPIs(teams) {
         const events = [];
-        
+
         // Get date range for API calls
         const today = new Date();
         const nextMonth = new Date();
         nextMonth.setMonth(nextMonth.getMonth() + 1);
-        
+
         const startDate = today.toISOString().split('T')[0];
         const endDate = nextMonth.toISOString().split('T')[0];
-        
+
         // Group teams by sport to minimize API calls
         const mlbTeams = teams.filter(t => t.type === 'mlb');
         const nbaTeams = teams.filter(t => t.type === 'nba');
         const nhlTeams = teams.filter(t => t.type === 'nhl');
         const nflTeams = teams.filter(t => t.type === 'nfl');
-        
+
         try {
             // Fetch MLB games (all games, then filter for your teams)
             if (mlbTeams.length > 0) {
@@ -81,17 +81,17 @@ class SportsHub {
                 const filteredMLBGames = this.filterGamesForTeams(mlbGames, mlbTeams);
                 events.push(...filteredMLBGames);
             }
-            
+
             // Add other sports here later
             // if (nbaTeams.length > 0) {
             //     const nbaGames = await this.fetchNBAGames(startDate, endDate);
             //     events.push(...this.filterGamesForTeams(nbaGames, nbaTeams));
             // }
-            
+
         } catch (error) {
             console.error('Error fetching API data:', error);
         }
-        
+
         return events;
     }
 
@@ -100,12 +100,12 @@ class SportsHub {
         try {
             const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=${startDate}&endDate=${endDate}`;
             console.log('MLB API URL:', url);
-            
+
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`MLB API error: ${response.status}`);
             }
-            
+
             const data = await response.json();
             return this.normalizeMLBData(data);
         } catch (error) {
@@ -127,7 +127,7 @@ class SportsHub {
     // Convert MLB API response to our standard format
     normalizeMLBData(data) {
         const games = [];
-        
+
         if (data.dates) {
             for (const date of data.dates) {
                 if (date.games) {
@@ -146,29 +146,36 @@ class SportsHub {
                 }
             }
         }
-        
+
         return games;
     }
 
     // Convert MLB status to our standard format
     getMLBGameStatus(status) {
         const state = status.detailedState || status.statusCode;
+        const abstractState = status.abstractGameState;
+
+        // Check abstract state first for broader categories
+        if (abstractState === 'Live') return 'Live';
+        if (abstractState === 'Final') return 'Final';
         
+        // Then check detailed states
         if (state === 'In Progress' || state === 'I') return 'Live';
         if (state === 'Final' || state === 'F') return 'Final';
         if (state === 'Postponed' || state === 'P') return 'Postponed';
         if (state === 'Cancelled' || state === 'C') return 'Cancelled';
-        
+        if (state === 'Delayed' || state === 'D') return 'Delayed';
+
         return 'Scheduled';
     }
 
     filterEvents(timeframe) {
         this.currentFilter = timeframe;
-        
+
         // Update active button
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${timeframe}Btn`).classList.add('active');
-        
+
         this.applyFilters();
     }
 
@@ -184,7 +191,7 @@ class SportsHub {
 
         let filtered = this.allEvents.filter(event => {
             const eventDate = new Date(event.start);
-            
+
             // Time filter
             switch (this.currentFilter) {
                 case 'today':
@@ -208,7 +215,7 @@ class SportsHub {
                     event.teamA, event.teamB, event.fighterA, event.fighterB,
                     event.league, event.promotion, event.sport
                 ].filter(Boolean).join(' ').toLowerCase();
-                
+
                 if (!searchFields.includes(this.searchQuery)) return false;
             }
 
@@ -240,17 +247,17 @@ class SportsHub {
         const eventDate = new Date(event.start);
         const isToday = this.isToday(eventDate);
         const isTomorrow = this.isTomorrow(eventDate);
-        
+
         let dateLabel = '';
         if (isToday) {
             dateLabel = 'Today';
         } else if (isTomorrow) {
             dateLabel = 'Tomorrow';
         } else {
-            dateLabel = eventDate.toLocaleDateString('en-US', { 
-                weekday: 'short', 
-                month: 'short', 
-                day: 'numeric' 
+            dateLabel = eventDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
             });
         }
 
@@ -260,12 +267,12 @@ class SportsHub {
             hour12: true
         });
 
-        const matchup = event.teamA && event.teamB 
+        const matchup = event.teamA && event.teamB
             ? `${event.teamA} <span class="vs">vs</span> ${event.teamB}`
             : `${event.fighterA} <span class="vs">vs</span> ${event.fighterB}`;
 
         const league = event.league || event.promotion;
-        const statusClass = event.status === 'live' ? 'status-live' : 'status-scheduled';
+        const statusClass = event.status === 'Live' ? 'status-live' : 'status-scheduled';
 
         return `
             <div class="event-card">
@@ -296,7 +303,7 @@ class SportsHub {
     showError(message) {
         const eventsListEl = document.getElementById('eventsList');
         const loadingEl = document.getElementById('loading');
-        
+
         loadingEl.style.display = 'none';
         eventsListEl.innerHTML = `
             <div class="event-card" style="text-align: center; color: #f44336;">
@@ -324,7 +331,7 @@ const APIHelpers = {
         return [];
     },
 
-    // Example function for NBA API integration  
+    // Example function for NBA API integration
     async fetchNBAGames(team) {
         // Example using balldontlie API (free tier available)
         // const response = await fetch(`https://www.balldontlie.io/api/v1/games?team_ids[]=${team.id}&start_date=${today}&end_date=${nextWeek}`);
@@ -335,7 +342,7 @@ const APIHelpers = {
     // Normalize different API responses to common format
     normalizeMLBData(data) {
         // Convert MLB API response to our event format
-        return data.dates?.flatMap(date => 
+        return data.dates?.flatMap(date =>
             date.games?.map(game => ({
                 id: `mlb_${game.gamePk}`,
                 sport: 'Baseball',
@@ -352,7 +359,7 @@ const APIHelpers = {
         // Convert NBA API response to our event format
         return data.data?.map(game => ({
             id: `nba_${game.id}`,
-            sport: 'Basketball', 
+            sport: 'Basketball',
             league: 'NBA',
             teamA: game.visitor_team.full_name,
             teamB: game.home_team.full_name,
