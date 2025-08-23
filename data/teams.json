@@ -1,0 +1,64 @@
+[
+  {
+    "type": "mlb",
+    "team": "New York Yankees",
+    "city": "New York"
+  },
+  {
+    "type": "mlb",
+    "team": "Los Angeles Dodgers",
+    "city": "Los Angeles"
+  },
+  {
+    "type": "mlb",
+    "team": "San Francisco Giants",
+    "city": "San Francisco"
+  },
+  {
+    "type": "nba",
+    "team": "Los Angeles Lakers",
+    "city": "Los Angeles"
+  },
+  {
+    "type": "nba",
+    "team": "Golden State Warriors",
+    "city": "San Francisco"
+  },
+  {
+    "type": "nba",
+    "team": "Boston Celtics",
+    "city": "Boston"
+  },
+  {
+    "type": "nhl",
+    "team": "Los Angeles Kings",
+    "city": "Los Angeles"
+  },
+  {
+    "type": "nhl",
+    "team": "San Jose Sharks",
+    "city": "San Jose"
+  },
+  {
+    "type": "nfl",
+    "team": "San Francisco 49ers",
+    "city": "San Francisco"
+  },
+  {
+    "type": "nfl",
+    "team": "Los Angeles Rams",
+    "city": "Los Angeles"
+  },
+  {
+    "type": "mma",
+    "promotion": "UFC"
+  },
+  {
+    "type": "mma",
+    "promotion": "Bellator"
+  },
+  {
+    "type": "mma",
+    "promotion": "PFL"
+  }
+]
