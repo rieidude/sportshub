@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports & MMA Hub</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SportsHub">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 Sports & MMA Hub</h1>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search teams, fighters, or leagues..." />
+            </div>
+            <div class="filter-buttons">
+                <button id="todayBtn" class="filter-btn active">Today</button>
+                <button id="tomorrowBtn" class="filter-btn">Tomorrow</button>
+                <button id="weekBtn" class="filter-btn">This Week</button>
+                <button id="allBtn" class="filter-btn">All</button>
+            </div>
+        </header>
+
+        <main>
+            <div id="loading" class="loading">Loading events...</div>
+            <div id="eventsList" class="events-list"></div>
+            <div id="noEvents" class="no-events" style="display: none;">
+                <p>No events found for the selected timeframe.</p>
+            </div>
+        </main>
+
+        <footer>
+            <div class="install-prompt" id="installPrompt" style="display: none;">
+                <p>📱 Add to Home Screen for quick access!</p>
+                <button id="installBtn">Install App</button>
+                <button id="dismissBtn">×</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+
+        // Install prompt handling
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').style.display = 'block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').style.display = 'none';
+                });
+            }
+        });
+
+        document.getElementById('dismissBtn').addEventListener('click', () => {
+            document.getElementById('installPrompt').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
