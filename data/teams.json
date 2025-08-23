@@ -2,68 +2,31 @@
   {
     "type": "mlb",
     "team": "New York Yankees",
-    "city": "New York"
+    "teamId": 147,
+    "abbreviation": "NYY"
   },
   {
     "type": "mlb",
-    "team": "147",
-    "city": "New York"
+    "team": "Boston Red Sox",
+    "teamId": 111,
+    "abbreviation": "BOS"
   },
   {
     "type": "mlb",
     "team": "Los Angeles Dodgers",
-    "city": "Los Angeles"
+    "teamId": 119,
+    "abbreviation": "LAD"
   },
   {
     "type": "mlb",
-    "team": "San Francisco Giants",
-    "city": "San Francisco"
+    "team": "Houston Astros",
+    "teamId": 117,
+    "abbreviation": "HOU"
   },
   {
-    "type": "nba",
-    "team": "Los Angeles Lakers",
-    "city": "Los Angeles"
-  },
-  {
-    "type": "nba",
-    "team": "Golden State Warriors",
-    "city": "San Francisco"
-  },
-  {
-    "type": "nba",
-    "team": "Boston Celtics",
-    "city": "Boston"
-  },
-  {
-    "type": "nhl",
-    "team": "Los Angeles Kings",
-    "city": "Los Angeles"
-  },
-  {
-    "type": "nhl",
-    "team": "San Jose Sharks",
-    "city": "San Jose"
-  },
-  {
-    "type": "nfl",
-    "team": "San Francisco 49ers",
-    "city": "San Francisco"
-  },
-  {
-    "type": "nfl",
-    "team": "Los Angeles Rams",
-    "city": "Los Angeles"
-  },
-  {
-    "type": "mma",
-    "promotion": "UFC"
-  },
-  {
-    "type": "mma",
-    "promotion": "Bellator"
-  },
-  {
-    "type": "mma",
-    "promotion": "PFL"
+    "type": "mlb",
+    "team": "Atlanta Braves",
+    "teamId": 144,
+    "abbreviation": "ATL"
   }
 ]
