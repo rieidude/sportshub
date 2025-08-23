@@ -17,16 +17,4 @@
     "teamId": 119,
     "abbreviation": "LAD"
   },
-  {
-    "type": "mlb",
-    "team": "Houston Astros",
-    "teamId": 117,
-    "abbreviation": "HOU"
-  },
-  {
-    "type": "mlb",
-    "team": "Atlanta Braves",
-    "teamId": 144,
-    "abbreviation": "ATL"
-  }
 ]
